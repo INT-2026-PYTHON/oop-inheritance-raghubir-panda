@@ -155,3 +155,99 @@ Team total salary -> 173250.0 + 105000.0 + 84000.0
 =================================================
 
 """
+class Person:
+
+    species = "Homo sapiens"
+
+    def __init__(self, name, age):
+       self.name = name
+       self.age  = age
+    
+    def greet(self) -> str:
+       return f"Hi, I'm {self.name}, age {self.age}"
+    
+    @staticmethod
+    def is_adult(age) -> bool:
+       return age >= 18
+
+
+class Employee(Person):
+
+    company   = "Acme Corp"
+    bonus_pct = 5
+
+    def __init__(self, name, age, emp_id, salary):
+        super().__init__(name, age)
+        self.emp_id = emp_id
+        self.salary = salary
+
+    def work_intro(self) -> str:
+        return (f"I work at {Employee.company} "f"as id {self.emp_id}")
+    
+    def apply_bonus(self):
+       self.salary += self.salary * Employee.bonus_pct / 100
+
+    @classmethod
+    def set_bonus(cls, new_pct):
+       cls.bonus_pct = new_pct
+
+
+class Manager(Employee):
+
+    def __init__(self, name, age, emp_id, salary, team):
+        super().__init__(name, age, emp_id, salary)
+        self.team = team
+
+    def add_member(self, employee):
+        self.team.append(employee)
+
+    def team_intro(self) -> str:
+        return f"I lead a team of {len(self.team)} people."
+    
+    def team_total_salary(self) -> float:
+        sum_team = 0
+        for i in self.team:
+            sum_team += i.salary
+        return (self.salary + sum_team)
+    
+
+# Input example
+p = Person("Sam", 17)
+print(p.greet())
+print()
+
+e1 = Employee("Alice", 25, "E001", 100000)
+e2 = Employee("Bob",   30, "E002", 80000)
+print(f"{e1.greet()}\n{e1.work_intro()}")
+print()
+print(f"{e2.greet()}\n{e2.work_intro()}")
+print()
+
+m  = Manager("Carol", 40, "M001", 150000, [])
+m.add_member(e1)
+m.add_member(e2)
+print(f"{m.greet()}\n{m.work_intro()}\n{m.team_intro()}")
+print()
+
+e1.apply_bonus()
+e2.apply_bonus()
+m.apply_bonus()                      # inherited from Employee
+Employee.set_bonus(10)
+m.apply_bonus()
+
+e1.apply_bonus()
+e2.apply_bonus()
+
+print(f"Alice salary -> {e1.salary}")
+print(f"Bob salary -> {e2.salary}")
+print(f"Carol salary -> {m.salary} (after 5% bonus)")
+
+Employee.set_bonus(10)
+m.apply_bonus() 
+print(f"Carol salary -> {m.salary} (after 10% bonus)")
+print()
+
+print(f"is_adult(17) -> {Person.is_adult(17)}")
+print(f"is_adult(25) -> {Person.is_adult(25)}")
+
+print(f"Team total salary -> {m.team_total_salary()}")
